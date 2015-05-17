@@ -1,0 +1,105 @@
+# Tell ipython to load the matplotlib environment.
+%matplotlib
+
+import itertools
+
+import pandas
+import numpy
+import seaborn
+import matplotlib.pyplot
+import tabulate
+
+_DATA_FILEPATH = 'datagovdatasetsviewmetrics.csv'
+_ROTATION_DEGREES = 90
+_BOTTOM_MARGIN = 0.35
+_COLOR_THEME = 'coolwarm'
+_LABEL_X = 'Organizations'
+_LABEL_Y = 'Views'
+_TITLE = 'Organizations with Most Views'
+_ORGANIZATION_COUNT = 10
+_MAX_LABEL_LENGTH = 20
+
+def get_data():
+    # Read the dataset.
+
+    d = pandas.read_csv(_DATA_FILEPATH)
+
+    # Group by organization.
+
+    def sum_views(df):
+        return sum(df['Views per Month'])
+
+    g = d.groupby('Organization Name').apply(sum_views)
+
+    # Sort by views (descendingly).
+
+    g.sort(ascending=False)
+
+    # Grab the first N to plot.
+
+    items = g.iteritems()
+    s = itertools.islice(items, 0, _ORGANIZATION_COUNT)
+
+    # Flatten the generator or we'll not be able to enumerate it twice.
+    s = list(s)
+
+    # Truncate the names (otherwise they're unwieldy).
+
+    distilled = []
+    for (name, views) in s:
+        if len(name) > (_MAX_LABEL_LENGTH - 3):
+            name = name[:17] + '...'
+
+        distilled.append((name, views))
+
+    return distilled
+
+def print_table(distilled):
+    headings = ['Organization', 'Views']
+    print(tabulate.tabulate(distilled, headers=headings))
+
+def plot_chart(distilled):
+    # Split the series into separate vectors of labels and values.
+
+    labels_raw = []
+    values_raw = []
+    for (name, views) in distilled:
+        labels_raw.append(name)
+        values_raw.append(views)
+
+    labels = numpy.array(labels_raw)
+    values = numpy.array(values_raw)
+
+    # Create one plot.
+
+    seaborn.set(style="white", context="talk")
+
+    (f, ax) = matplotlib.pyplot.subplots(1)
+
+    b = seaborn.barplot(
+        labels, 
+        values,
+        ci=None, 
+        palette=_COLOR_THEME, 
+        hline=0, 
+        ax=ax,
+        x_order=labels)
+
+    # Set labels.
+
+    ax.set_title(_TITLE)
+    ax.set_xlabel(_LABEL_X)
+    ax.set_ylabel(_LABEL_Y)
+
+    # Rotate the x-labels (otherwise they'll overlap). Seaborn also doesn't do 
+    # very well with diagonal labels so we'll go vertical.
+    b.set_xticklabels(labels, rotation=_ROTATION_DEGREES)
+
+    # Add some margin to the bottom so the labels aren't cut-off.
+    matplotlib.pyplot.subplots_adjust(bottom=_BOTTOM_MARGIN)
+
+if __name__ == '__main__':
+    distilled = get_data()
+
+    print_table(distilled)
+    plot_chart(distilled)
