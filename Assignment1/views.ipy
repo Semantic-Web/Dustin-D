@@ -40,8 +40,12 @@ def get_data():
     items = g.iteritems()
     s = itertools.islice(items, 0, _ORGANIZATION_COUNT)
 
-    # Flatten the generator or we'll not be able to enumerate it twice.
     s = list(s)
+
+    # Sort them in ascending order, this time, so that the larger ones are on 
+    # the right (in red) in the chart. This has a side-effect of flattening the 
+    # generator while we're at it.
+    s = sorted(s, key=lambda (n, v): v)
 
     # Truncate the names (otherwise they're unwieldy).
 
