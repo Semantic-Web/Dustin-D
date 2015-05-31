@@ -1,6 +1,6 @@
-## Assignments
+## COP 5859 Assignments
 
-Assignment 1: &lt;waiting to submit&gt;
+[Assignment 1](Assignment1)
 
 Assignment 2:
 
