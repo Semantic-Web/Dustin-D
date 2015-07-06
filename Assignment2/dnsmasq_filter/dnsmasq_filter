@@ -1,0 +1,99 @@
+#!/usr/bin/env python2.7
+
+import sys
+import os
+import re
+import datetime
+import json
+
+_CHUNK_SIZE_B = 50
+_NL = '\n'
+_MESSAGE_RX = r'(([a-zA-Z]+) +([0-9]+) ([0-9]+:[0-9]+:[0-9]+)) (([^ ]+ )?[^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+)'
+_MESSAGE_RE = re.compile(_MESSAGE_RX)
+_TIMESTAMP_IN_FORMAT = '%b %d %H:%M:%S'
+_TIMESTAMP_OUT_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+def _read_messages():
+    buffer_ = ''
+    while 1:
+        buffer_ += sys.stdin.read(_CHUNK_SIZE_B)
+
+        i = 0
+        while i < len(buffer_):
+            try:
+                pivot = buffer_.index(_NL, i)
+            except ValueError:
+                break
+
+            i = pivot + 1
+
+            first_part = buffer_[:pivot]
+            second_part = buffer_[pivot:]
+
+            message = buffer_[:pivot + 1].rstrip()
+            buffer_ = buffer_[pivot + 1:]
+
+            if message == '':
+                continue
+
+            yield message
+
+def _parse_message(message):
+    """Parse the message.
+
+    Examples:
+
+        Jul  6 03:06:23 dustinhub dnsmasq[3152]: cached pics.ebaystatic.com.edgesuite.net is <CNAME>
+        Jul  6 03:06:31 dustinhub dnsmasq[3152]: query[A] cdn1.nflximg.net from 192.168.10.106
+        Jul  6 03:06:31 dustinhub dnsmasq[3152]: forwarded cdn1.nflximg.net to 127.0.1.1
+        Jul  6 03:06:31 dustinhub dnsmasq[3152]: reply a1015.dscg.akamai.net is 23.201.103.81
+        Jul  6 14:44:08 dnsmasq[10453]: cached 222.48.110.117 is NXDOMAIN-IPv4
+        Jul  6 15:55:20 dnsmasq-dhcp[10453]: DHCPREQUEST(eth0) 192.168.10.52 b8:27:eb:2f:7f:8a
+    """
+
+    m = _MESSAGE_RE.match(message)
+    if m is None:
+        raise ValueError("Couldn't parse message: ({0}) [{1}]".\
+                         format(len(message), message))
+
+    # Since the space between the month and the day may not remain constant, 
+    # rebuild the timestamp to exclude it.
+
+    month_phrase = m.group(2)
+    day_phrase = int(m.group(3))
+    timestamp_phrase = m.group(4)
+
+    rebuilt_timestamp = \
+        '{:s} {:02d} {:s}'.format(month_phrase, day_phrase, timestamp_phrase)
+
+    timestamp_dt = \
+        datetime.datetime.strptime(rebuilt_timestamp, _TIMESTAMP_IN_FORMAT)
+    
+    # Since the date doesn't include a year we'll have to replace it in. It's 
+    # reasonable to think that there might suddenly be a year introduced around 
+    # New Year's, but we don't have to deal with that right now.
+    now_dt = datetime.datetime.now()
+    timestamp_dt = timestamp_dt.replace(year=now_dt.year)
+
+    return {
+        'timestamp': timestamp_dt.strftime(_TIMESTAMP_OUT_FORMAT),
+        'type': m.group(7),
+        'hostname': m.group(8),
+        'conjunction': m.group(9),
+        'ip': m.group(10),
+    }
+
+def _main():
+    if os.isatty(sys.stdin.fileno()) is True:
+        raise EnvironmentError("Please pipe-in the dnsmasq log.")
+
+    for message in _read_messages():
+        try:
+            parsed = _parse_message(message)
+        except ValueError:
+            continue
+
+        print(json.dumps(parsed))
+
+if __name__ == '__main__':
+    _main()

@@ -1,0 +1,5 @@
+Jul  6 03:06:23 dustinhub dnsmasq[3152]: cached pics.ebaystatic.com.edgesuite.net is <CNAME>
+Jul  6 03:06:31 dustinhub dnsmasq[3152]: query[A] cdn1.nflximg.net from 192.168.10.106
+Jul  6 03:06:31 dustinhub dnsmasq[3152]: forwarded cdn1.nflximg.net to 127.0.1.1
+Jul  6 03:06:31 dustinhub dnsmasq[3152]: reply a1015.dscg.akamai.net is 23.201.103.81
+Jul  6 14:44:08 dnsmasq[10453]: cached 222.48.110.117 is NXDOMAIN-IPv4
