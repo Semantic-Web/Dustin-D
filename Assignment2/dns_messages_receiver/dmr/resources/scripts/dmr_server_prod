@@ -1,0 +1,21 @@
+#!/usr/bin/env python2.7
+
+import sys
+import os
+dev_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, dev_path)
+
+import dmr
+root_path = os.path.abspath(os.path.join(os.path.dirname(dmr.__file__), '..'))
+
+import os
+os.chdir(root_path)
+
+import subprocess
+
+cmd = ['gunicorn', '-c', 'dmr/resources/data/gunicorn_conf_prod.py', 'dmr.app.main:app']
+
+p = subprocess.Popen(cmd, env=os.environ)
+r = p.wait()
+if r != 0:
+    raise EnvironmentError("Gunicorn launch failed.")
