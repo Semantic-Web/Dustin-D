@@ -34,6 +34,7 @@ setuptools.setup(
         ],
     },
     scripts=[
+        'dmr/resources/scripts/dmr_db_model_dns_message_print_by_hour',
         'dmr/resources/scripts/dmr_db_provision',
         'dmr/resources/scripts/dmr_server_dev',
         'dmr/resources/scripts/dmr_server_prod',
