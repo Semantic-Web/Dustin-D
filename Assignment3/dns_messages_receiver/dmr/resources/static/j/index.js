@@ -79,7 +79,7 @@ dmr.index.boot = function() {
                 timestamp_tuple[1] - 1, 
                 timestamp_tuple[2], 
                 timestamp_tuple[3], 
-                timestamp_tuple[4], 
+                0, 
                 0, 
                 0);
 
@@ -104,7 +104,10 @@ dmr.index.boot = function() {
             };
         }
 
-        plot_activity(series_config);
+        return;
+
+// TODO(dustin): Debugging.
+//        plot_activity(series_config);
     }
 
     function activity_error() {
@@ -112,7 +115,7 @@ dmr.index.boot = function() {
     }
 
     $.ajax({
-        url: '/dns/ajax/activity/minute',
+        url: '/dns/ajax/activity/hour',
         method: 'get',
         dataType: 'json',
         success: activity_success,
