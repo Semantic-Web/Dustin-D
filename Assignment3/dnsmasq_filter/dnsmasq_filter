@@ -28,6 +28,15 @@ _TIMESTAMP_OUT_FORMAT = '%Y-%m-%d %H:%M:%S'
 # overloading our pipe. Make sure we make the most of a single post.
 _DEFAULT_BUNDLE_SIZE = 100
 
+
+class IgnoreMessageException(object):
+    pass
+
+
+class InvalidMessageException(IgnoreMessageException):
+    pass
+
+
 def _read_messages():
     buffer_ = ''
     while 1:
@@ -68,8 +77,11 @@ def _parse_message(message):
 
     m = _MESSAGE_RE.match(message)
     if m is None:
-        raise ValueError("Couldn't parse message: ({0}) [{1}]".\
-                         format(len(message), message))
+        raise InvalidMessageException("Couldn't parse message: ({0}) [{1}]".\
+                                      format(len(message), message))
+
+    if 'read /etc/hosts' in message:
+        raise IgnoreMessageException("Ignoring message: [{0}]".format(message))
 
     # Since the space between the month and the day may not remain constant, 
     # rebuild the timestamp to exclude it.
@@ -144,7 +156,7 @@ def _main():
     for message in _read_messages():
         try:
             parsed = _parse_message(message)
-        except ValueError:
+        except IgnoreMessageException:
             continue
 
         if relay_to_url is None:
