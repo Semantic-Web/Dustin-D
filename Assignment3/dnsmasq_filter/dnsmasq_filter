@@ -26,10 +26,7 @@ _TIMESTAMP_OUT_FORMAT = '%Y-%m-%d %H:%M:%S'
 # We want to make this fairly large. We aren't reading and pushing 
 # concurrently, so every moment we're not actually consuming we're risking 
 # overloading our pipe. Make sure we make the most of a single post.
-_BUNDLE_SIZE = 100
-
-# TODO(dustin): Debugging.
-_BUNDLE_SIZE = 2
+_DEFAULT_BUNDLE_SIZE = 100
 
 def _read_messages():
     buffer_ = ''
@@ -109,6 +106,12 @@ def _parse_args():
         '-ru', '--relay-to-url', 
         help="URL to post messages to")
 
+    parser.add_argument(
+        '-bs', '--bundle-size', 
+        type=int,
+        default=_DEFAULT_BUNDLE_SIZE,
+        help="Bundle size")
+
     return parser.parse_args()
 
 def _post_message(url, message_list):
@@ -130,6 +133,7 @@ def _main():
     args = _parse_args()
 
     relay_to_url = args.relay_to_url
+    bundle_size = args.bundle_size
 
     if os.isatty(sys.stdin.fileno()) is True:
         raise EnvironmentError("Please pipe-in the dnsmasq log.")
@@ -150,7 +154,7 @@ def _main():
         queue.append(parsed)
 
         # Only push after we've accumulated enough.
-        if len(queue) < _BUNDLE_SIZE:
+        if len(queue) < bundle_size:
             continue
 
         _post_message(relay_to_url, queue)
