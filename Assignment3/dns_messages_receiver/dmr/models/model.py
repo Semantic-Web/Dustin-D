@@ -98,3 +98,7 @@ class Model(object):
     def insert_records(self, table_name, rows):
         raw = self.get_table(table_name).insert(rows).run(self.__c)
         return DDL_RESULT(**raw)
+
+    @property
+    def connection(self):
+        return dmr.db.get_connection()
