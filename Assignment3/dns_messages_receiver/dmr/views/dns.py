@@ -37,3 +37,38 @@ def dns_message():
     response = flask.make_response(raw_response)
 
     return (response, 200)
+
+@DNS_BP.route('/ajax/activity/minute', methods=['GET'])
+def dns_ajax_activity_by_minute():
+    now_dt = datetime.datetime.now()
+    delta_td = datetime.timedelta(seconds=dmr.config.dns.ACTIVITY_CUTOFF_S)
+
+    cutoff_dt = now_dt - delta_td
+
+    dm = dmr.models.dns_messages.DnsMessagesModel()
+    data = dm.get_daily_activity_by_minute()
+
+    raw_response = flask.jsonify(data)
+    response = flask.make_response(raw_response)
+
+    return (response, 200)
+
+@DNS_BP.route('/ajax/activity/hour', methods=['GET'])
+def dns_ajax_activity_by_hour():
+    now_dt = datetime.datetime.now()
+    delta_td = datetime.timedelta(seconds=dmr.config.dns.ACTIVITY_CUTOFF_S)
+
+    cutoff_dt = now_dt - delta_td
+
+    dm = dmr.models.dns_messages.DnsMessagesModel()
+    rows = dm.get_daily_activity_by_hour(cutoff_dt)
+    rows = list(rows)
+
+    result = {
+        'rows': rows,
+    }
+
+    raw_response = flask.jsonify(result)
+    response = flask.make_response(raw_response)
+
+    return (response, 200)
