@@ -1,8 +1,10 @@
 import os.path
 
-TEMPLATE_PATH = \
+_RESOURCES_PATH = \
     os.path.abspath(os.path.join(
         os.path.dirname(__file__), 
         '..', 
-        'resources', 
-        'templates'))
+        'resources'))
+
+TEMPLATE_PATH = os.path.join(_RESOURCES_PATH, 'templates')
+STATIC_PATH = os.path.join(_RESOURCES_PATH, 'static')

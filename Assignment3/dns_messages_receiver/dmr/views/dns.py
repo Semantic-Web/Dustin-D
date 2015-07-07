@@ -46,9 +46,14 @@ def dns_ajax_activity_by_minute():
     cutoff_dt = now_dt - delta_td
 
     dm = dmr.models.dns_messages.DnsMessagesModel()
-    data = dm.get_daily_activity_by_minute()
+    rows = dm.get_daily_activity_by_minute(cutoff_dt)
+    rows = list(rows)
 
-    raw_response = flask.jsonify(data)
+    result = {
+        'rows': rows,
+    }
+
+    raw_response = flask.jsonify(result)
     response = flask.make_response(raw_response)
 
     return (response, 200)
