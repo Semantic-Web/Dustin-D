@@ -94,3 +94,7 @@ class Model(object):
         r = DDL_RESULT(**raw)
 
         return r.generated_keys[0]
+
+    def insert_records(self, table_name, rows):
+        raw = self.get_table(table_name).insert(rows).run(self.__c)
+        return DDL_RESULT(**raw)

@@ -16,19 +16,8 @@ class DnsMessagesModel(dmr.models.model.Model):
         ],
     }
 
-    def add_message(self, timestamp, type_, hostname, conjunction, ip):
-        assert issubclass(timestamp.__class__, datetime.datetime), \
-               "Timestamp must be a datetime."
-
-        id_ = self.insert_record(
-                _TABLE_DNS_MESSAGES,
-                timestamp=timestamp,
-                type=type_,
-                hostname=hostname,
-                conjunction=conjunction,
-                ip=ip)
-
-        return id_
+    def add_messages(self, rows):
+        self.insert_records(_TABLE_DNS_MESSAGES, rows)
 
     def get_daily_activity(self):
         t = self.get_table(_TABLE_DNS_MESSAGES)

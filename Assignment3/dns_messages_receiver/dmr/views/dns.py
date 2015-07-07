@@ -27,12 +27,7 @@ def dns_message():
         message['timestamp'] = \
             timestamp_dt.replace(tzinfo=dmr.config.dns.MESSAGE_TZ)
 
-        dm.add_message(
-            message['timestamp'], 
-            message['type'], 
-            message['hostname'], 
-            message['conjunction'], 
-            message['ip'])
+    dm.add_messages(message_list)
 
     result = {
         'count': len(message_list),
