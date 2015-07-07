@@ -1,0 +1,29 @@
+#!/usr/bin/env python2.7
+
+import sys
+import os
+dev_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, dev_path)
+
+import datetime
+
+import dmr.config.log
+import dmr.config.dns
+import dmr.db
+import dmr.models.dns_messages
+
+def _main():
+    dm = dmr.models.dns_messages.DnsMessagesModel()
+    
+    now_dt = datetime.datetime.now()
+    timestamp_phrase = now_dt.replace(tzinfo=dmr.config.dns.MESSAGE_TZ)
+    type_ = '-type-'
+    hostname = '-hostname-'
+    conjunction = '-conjunction-'
+    ip = '1.2.3.4'
+
+    id_ = dm.add_message(timestamp_phrase, type_, hostname, conjunction, ip)
+    print(id_)
+
+if __name__ == '__main__':
+    _main()

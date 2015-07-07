@@ -1,7 +1,12 @@
 import bz2
 import json
+import datetime
 
 import flask
+
+import dmr.config
+import dmr.config.dns
+import dmr.models.dns_messages
 
 DNS_BP = flask.Blueprint('dns', __name__, url_prefix='/dns')
 
@@ -11,8 +16,23 @@ def dns_message():
     data_encoded = bz2.decompress(data_bz2)
     message_list = json.loads(data_encoded)
 
+    dm = dmr.models.dns_messages.DnsMessagesModel()
+
     for message in message_list:
-        pass
+        timestamp_dt = \
+            datetime.datetime.strptime(
+                message['timestamp'], 
+                dmr.config.DATETIME_FORMAT)
+
+        message['timestamp'] = \
+            timestamp_dt.replace(tzinfo=dmr.config.dns.MESSAGE_TZ)
+
+        dm.add_message(
+            message['timestamp'], 
+            message['type'], 
+            message['hostname'], 
+            message['conjunction'], 
+            message['ip'])
 
     result = {
         'count': len(message_list),
