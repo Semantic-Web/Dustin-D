@@ -6,6 +6,7 @@ Requirements:
 requests
 """
 
+import logging
 import sys
 import os
 import re
@@ -15,6 +16,8 @@ import argparse
 import bz2
 
 import requests
+
+import log
 
 _CHUNK_SIZE_B = 50
 _NL = '\n'
@@ -27,6 +30,9 @@ _TIMESTAMP_OUT_FORMAT = '%Y-%m-%d %H:%M:%S'
 # concurrently, so every moment we're not actually consuming we're risking 
 # overloading our pipe. Make sure we make the most of a single post.
 _DEFAULT_BUNDLE_SIZE = 100
+
+_LOGGER = logging.getLogger(__name__)
+_LOGGER.setLevel(logging.DEBUG)
 
 
 class IgnoreMessageException(object):
@@ -129,7 +135,7 @@ def _parse_args():
 def _post_message(url, message_list):
     """Relay the messages to the receiver."""
 
-    print("Posting ({0}) messages.".format(len(message_list)))
+    _LOGGER.debug("Posting ({0}) messages.".format(len(message_list)))
 
     headers = {
         'Content-Type': 'application/octet-stream',
