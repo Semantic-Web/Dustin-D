@@ -35,7 +35,7 @@ class DnsMessagesModel(dmr.models.model.Model):
             astimezone(pytz.UTC).\
             strftime(dmr.config.DATETIME_FORMAT)
 
-        rows = t.filter(rethinkdb.row['timestamp'].lt(cutoff_phrase))\
+        rows = t.filter(rethinkdb.row['timestamp'].gt(cutoff_phrase))\
                 .filter(lambda row: row['type'].match('^query'))\
                 .group([
                     rethinkdb.row['timestamp'].year(), 
@@ -62,7 +62,7 @@ class DnsMessagesModel(dmr.models.model.Model):
             astimezone(pytz.UTC).\
             strftime(dmr.config.DATETIME_FORMAT)
 
-        rows = t.filter(rethinkdb.row['timestamp'].lt(cutoff_phrase))\
+        rows = t.filter(rethinkdb.row['timestamp'].gt(cutoff_phrase))\
                 .filter(lambda row: row['type'].match('^query'))\
                 .group([
                     rethinkdb.row['timestamp'].year(), 

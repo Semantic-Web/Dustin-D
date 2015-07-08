@@ -1,6 +1,7 @@
 import bz2
 import json
 import datetime
+import collections
 
 import flask
 
@@ -47,13 +48,15 @@ def dns_ajax_activity_by_minute():
 
     dm = dmr.models.dns_messages.DnsMessagesModel()
     rows = dm.get_daily_activity_by_minute(cutoff_dt)
-    rows = list(rows)
 
-    result = {
-        'rows': rows,
-    }
+    bins = collections.defaultdict(list)
+    for (timestamp_t, type_, count) in rows:
+        bins[type_].append((timestamp_t, count))
 
-    raw_response = flask.jsonify(result)
+    for type_ in bins.keys():
+        bins[type_] = sorted(bins[type_], key=lambda (t, c): t)
+
+    raw_response = flask.jsonify(dict(bins))
     response = flask.make_response(raw_response)
 
     return (response, 200)
@@ -67,13 +70,15 @@ def dns_ajax_activity_by_hour():
 
     dm = dmr.models.dns_messages.DnsMessagesModel()
     rows = dm.get_daily_activity_by_hour(cutoff_dt)
-    rows = list(rows)
 
-    result = {
-        'rows': rows,
-    }
+    bins = collections.defaultdict(list)
+    for (timestamp_t, type_, count) in rows:
+        bins[type_].append((timestamp_t, count))
 
-    raw_response = flask.jsonify(result)
+    for type_ in bins.keys():
+        bins[type_] = sorted(bins[type_], key=lambda (t, c): t)
+
+    raw_response = flask.jsonify(dict(bins))
     response = flask.make_response(raw_response)
 
     return (response, 200)

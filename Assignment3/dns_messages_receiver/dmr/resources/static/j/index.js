@@ -8,9 +8,10 @@ if(typeof(dmr.index) == 'undefined') {
 }
 
 dmr.index.boot = function() {
-    function plot_activity(series_config) {
+    function plot_activity(series_config, minimum_time, maximum_time) {
         $('#activity_chart').highcharts({
             chart: {
+                type: 'spline',
                 zoomType: 'x'
             },
             title: {
@@ -19,12 +20,16 @@ dmr.index.boot = function() {
             xAxis: {
                 type: 'datetime',
                 labels: {
+                    format: '{value:(%m-%d) %H}',
                     rotation: -45,
                     style: {
                         fontSize: '13px',
                         fontFamily: 'Verdana, sans-serif'
                     }
-                }
+                },
+                min: minimum_time,
+                max: maximum_time,
+                minTickInterval: 60 * 60 * 1000
             },
             yAxis: {
                 min: 0,
@@ -37,49 +42,52 @@ dmr.index.boot = function() {
     }
 
     function activity_success(data) {
-        var series_data, series_config;
-
-        series_data = {};
+        var series_config = [], minimum_time = null, maximum_time = null;
 
         // Bin the data.
 
-        for(var i in data.rows) {
-            var row, timestamp_tuple, timestamp, type, count;
+        for(var type in data) {
+            var rows, distilled = [];
 
-            row = data.rows[i];
+            rows = data[type];
 
-            timestamp_tuple = row[0];
-            type = row[1];
-            count = row[2];
+            for(var i in rows) {
+                var row, timestamp_tuple, timestamp, type, count;
 
-            timestamp = Date.UTC(
-                timestamp_tuple[0], 
-                timestamp_tuple[1] - 1, 
-                timestamp_tuple[2], 
-                timestamp_tuple[3]);
+                row = rows[i];
 
-            if(typeof(series_data[type]) == 'undefined') {
-                series_data[type] = [[timestamp, count]];
-            } else {
-                series_data[type][series_data[type].length] = [timestamp, count];
+                timestamp_tuple = row[0];
+                count = row[1];
+
+                timestamp = new Date(
+                    timestamp_tuple[0], 
+                    timestamp_tuple[1] - 1, 
+                    timestamp_tuple[2], 
+                    timestamp_tuple[3]);
+
+                distilled[distilled.length] = [timestamp.getTime(), count];
+
+                if(minimum_time != null) {
+                    minimum_time = Math.min(minimum_time, timestamp);
+                } else {
+                    minimum_time = timestamp;
+                }
+
+                if(maximum_time != null) {
+                    maximum_time = Math.max(maximum_time, timestamp);
+                } else {
+                    maximum_time = timestamp;
+                }
             }
-        }
-
-        // Now, define the config.
-
-        series_config = [];
-
-        for(var type in series_data) {
-            var data = series_data[type];
 
             series_config[series_config.length] = {
-                type: 'area',
                 name: type.toUpperCase(),
-                data: data
+                data: distilled,
+                pointInterval: 60 * 60 * 1000
             };
         }
 
-        plot_activity(series_config);
+        plot_activity(series_config, minimum_time, maximum_time);
     }
 
     function activity_error() {
