@@ -1,6 +1,8 @@
 import datetime
 
 import rethinkdb
+import pytz
+import tzlocal
 
 import dmr.config
 import dmr.models.model
@@ -25,9 +27,16 @@ class DnsMessagesModel(dmr.models.model.Model):
     def get_daily_activity_by_minute(self, cutoff_dt):
         t = self.get_table(_TABLE_DNS_MESSAGES)
         
-        cutoff_phrase = cutoff_dt.strftime(dmr.config.DATETIME_FORMAT)
+        local_tz = tzlocal.get_localzone()
+
+        cutoff_phrase = \
+            cutoff_dt.\
+            replace(tzinfo=local_tz).\
+            astimezone(pytz.UTC).\
+            strftime(dmr.config.DATETIME_FORMAT)
 
         rows = t.filter(rethinkdb.row['timestamp'].lt(cutoff_phrase))\
+                .filter(lambda row: row['type'].match('^query'))\
                 .group([
                     rethinkdb.row['timestamp'].year(), 
                     rethinkdb.row['timestamp'].month(), 
@@ -45,9 +54,16 @@ class DnsMessagesModel(dmr.models.model.Model):
     def get_daily_activity_by_hour(self, cutoff_dt):
         t = self.get_table(_TABLE_DNS_MESSAGES)
         
-        cutoff_phrase = cutoff_dt.strftime(dmr.config.DATETIME_FORMAT)
+        local_tz = tzlocal.get_localzone()
+
+        cutoff_phrase = \
+            cutoff_dt.\
+            replace(tzinfo=local_tz).\
+            astimezone(pytz.UTC).\
+            strftime(dmr.config.DATETIME_FORMAT)
 
         rows = t.filter(rethinkdb.row['timestamp'].lt(cutoff_phrase))\
+                .filter(lambda row: row['type'].match('^query'))\
                 .group([
                     rethinkdb.row['timestamp'].year(), 
                     rethinkdb.row['timestamp'].month(), 

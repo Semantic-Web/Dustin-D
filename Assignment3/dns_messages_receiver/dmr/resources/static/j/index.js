@@ -17,43 +17,21 @@ dmr.index.boot = function() {
                 text: 'DNS Activity'
             },
             xAxis: {
-                type: 'datetime'
+                type: 'datetime',
+                labels: {
+                    rotation: -45,
+                    style: {
+                        fontSize: '13px',
+                        fontFamily: 'Verdana, sans-serif'
+                    }
+                }
             },
             yAxis: {
+                min: 0,
                 title: {
                     text: 'Count'
                 }
             },
-            legend: {
-                enabled: false
-            },
-            plotOptions: {
-                area: {
-                    fillColor: {
-                        linearGradient: {
-                            x1: 0,
-                            y1: 0,
-                            x2: 0,
-                            y2: 1
-                        },
-                        stops: [
-                            [0, Highcharts.getOptions().colors[0]],
-                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                        ]
-                    },
-                    marker: {
-                        radius: 2
-                    },
-                    lineWidth: 1,
-                    states: {
-                        hover: {
-                            lineWidth: 1
-                        }
-                    },
-                    threshold: null
-                }
-            },
-
             series: series_config
         });
     }
@@ -74,14 +52,11 @@ dmr.index.boot = function() {
             type = row[1];
             count = row[2];
 
-            timestamp = new Date(
+            timestamp = Date.UTC(
                 timestamp_tuple[0], 
                 timestamp_tuple[1] - 1, 
                 timestamp_tuple[2], 
-                timestamp_tuple[3], 
-                0, 
-                0, 
-                0);
+                timestamp_tuple[3]);
 
             if(typeof(series_data[type]) == 'undefined') {
                 series_data[type] = [[timestamp, count]];
@@ -104,10 +79,7 @@ dmr.index.boot = function() {
             };
         }
 
-        return;
-
-// TODO(dustin): Debugging.
-//        plot_activity(series_config);
+        plot_activity(series_config);
     }
 
     function activity_error() {
