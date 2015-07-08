@@ -25,7 +25,7 @@ class DnsMessagesModel(dmr.models.model.Model):
 
     def get_daily_activity_by_minute(self, cutoff_dt):
         assert cutoff_dt.tzinfo is not None, \
-               "Cutoff msut be timezone-aware."
+               "Cutoff timestamp must be timezone-aware."
 
         cutoff_dt = cutoff_dt.astimezone(pytz.UTC)
 

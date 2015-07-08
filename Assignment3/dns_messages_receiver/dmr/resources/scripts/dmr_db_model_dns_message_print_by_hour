@@ -6,6 +6,7 @@ dev_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '
 sys.path.insert(0, dev_path)
 
 import datetime
+import tzlocal
 
 import dmr.config.log
 import dmr.config.dns
@@ -15,9 +16,10 @@ import dmr.models.dns_messages
 def _main():
     dm = dmr.models.dns_messages.DnsMessagesModel()
 
-    now_dt = datetime.datetime.now()
+    local_tz = tzlocal.get_localzone()
+    now_dt = datetime.datetime.now().replace(tzinfo=local_tz)
     cutoff_dt = now_dt - datetime.timedelta(seconds=86400)
-    
+
     rows = dm.get_daily_activity_by_hour(cutoff_dt)
     rows = sorted(
             rows, 

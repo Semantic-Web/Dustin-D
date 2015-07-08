@@ -3,3 +3,4 @@ flask
 rethinkdb
 pytz
 tzlocal
+gevent
