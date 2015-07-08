@@ -4,7 +4,7 @@
 
 Assignment 2:
 
-Assignment 3:
+[Assignment 3](Assignment3)
 
 Assignment 4:
 
