@@ -1,0 +1,1 @@
+dmr/resources/INSTALL.rst
