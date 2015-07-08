@@ -4,6 +4,7 @@ import datetime
 import collections
 
 import flask
+import tzlocal
 
 import dmr.config
 import dmr.config.dns
@@ -41,7 +42,8 @@ def dns_message():
 
 @DNS_BP.route('/ajax/activity/minute', methods=['GET'])
 def dns_ajax_activity_by_minute():
-    now_dt = datetime.datetime.now()
+    local_tz = tzlocal.get_localzone()
+    now_dt = datetime.datetime.now().replace(tzinfo=local_tz)
     delta_td = datetime.timedelta(seconds=dmr.config.dns.ACTIVITY_CUTOFF_S)
 
     cutoff_dt = now_dt - delta_td
@@ -63,7 +65,8 @@ def dns_ajax_activity_by_minute():
 
 @DNS_BP.route('/ajax/activity/hour', methods=['GET'])
 def dns_ajax_activity_by_hour():
-    now_dt = datetime.datetime.now()
+    local_tz = tzlocal.get_localzone()
+    now_dt = datetime.datetime.now().replace(tzinfo=local_tz)
     delta_td = datetime.timedelta(seconds=dmr.config.dns.ACTIVITY_CUTOFF_S)
 
     cutoff_dt = now_dt - delta_td
