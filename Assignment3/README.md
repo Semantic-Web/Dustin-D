@@ -1,10 +1,10 @@
 ## Overview
 
-The purpose of this project was to configure a RPi device to resemble a hardware DNS server that emits resolution activity. In this case, I coerced my home network to write DNS resolution events to a log, use a tool ("filter tool") to parse and transmit them, and a DNS message-receiver server to persist and present activity. 
+The purpose of this project was to configure a RPi device to resemble a hardware DNS server that emits resolution activity. In this case, I coerced my home network to write DNS resolution events to a log, use a tool ("filter tool") to parse and transmit them, and a DNS message-receiver server to persist and present activity.
 
 ![Flow Overview](flow_overview.png)
 
-Since the filter-tool sends the batched messages to a URL endpoint, the DNS server and the message-receiver server are decoupled and need not be colocated.
+Since the filter-tool sends the batched messages to a URL endpoint, the DNS server and the message-receiver server are decoupled. Therefore, they can be colocated but do not have to be.
 
 
 ## Process
