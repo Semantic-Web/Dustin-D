@@ -1,3 +1,5 @@
+Since no format was specified in the Midterm instructions, this document was typed using Markdown.
+
 ## Abstract
 
 The purpose of this paper is to describe the project-selection process, the objectives for the chosen project, and notes on the execution of the project. The selection process is detailed due to the sheer level of effort that was expended on it.
