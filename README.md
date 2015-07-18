@@ -10,6 +10,8 @@ Assignment 4:
 
 Assignment 5:
 
+[Midterm](Midterm)
+
 Assignment 6:
 
 Assignment 7:
