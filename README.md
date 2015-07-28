@@ -12,7 +12,7 @@ Assignment 5:
 
 [Midterm](Midterm Exam)
 
-Assignment 6:
+[Assignment 6](Assignment6)
 
 Assignment 7:
 
