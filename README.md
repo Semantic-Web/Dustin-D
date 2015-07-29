@@ -14,6 +14,6 @@ Assignment 5:
 
 [Assignment 6](Assignment6)
 
-Assignment 7:
+[Assignment 7](Assignment7)
 
 Assignment 8:
