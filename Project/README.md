@@ -97,7 +97,7 @@ Loaded: (600000)
 
 ## Conclusions
 
-More thought should be put into the potential projects that are given to the students of this class. This was ridiculous and benefitted no one. This could not be discussed with Professor Shankar as he only responded to messages every week or two.
+More thought should be put into the potential projects that are given to the students of this class. This project officially took five-minutes to do. This could not be discussed with Professor Shankar as he only responded to messages every week or two.
 
 
 ## References
